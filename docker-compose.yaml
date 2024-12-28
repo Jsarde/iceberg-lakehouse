@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # MinIO (S3-compatible storage)
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "9000:9000"  # MinIO console
+      - "9001:9001"  # MinIO API
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_data:/data
+    networks:
+      - lakehouse_network
+    command: server /data --console-address ":9001"
+
+  # Nessie (Catalog for Git-like versioning)
+  nessie:
+    image: projectnessie/nessie:latest
+    container_name: nessie
+    ports:
+      - "19120:19120"  # Nessie REST API
+    networks:
+      - lakehouse_network
+    environment:
+      QUARKUS_HTTP_PORT: 19120
+
+  # Trino (SQL query engine)
+  trino:
+    image: trinodb/trino:latest
+    container_name: trino
+    ports:
+      - "8080:8080"  # Trino UI and API
+    environment:
+      - NESSIE_URI=http://nessie:19120/api/v1
+    volumes:
+      - ./catalog:/etc/trino/catalog
+    networks:
+      - lakehouse_network
+
+volumes:
+  minio_data:
+
+networks:
+  lakehouse_network:
+    driver: bridge
+
