@@ -140,7 +140,8 @@ CREATE TABLE iceberg.my_schema.films (
 Insert data into the table
 
 ```sql
-INSERT INTO iceberg.tests.films (id, name, year, director, rating) VALUES
+INSERT INTO iceberg.my_schema.films (id, name, year, director, rating)
+VALUES
 (1, 'Schindler''s List', 1993, 'Steven Spielberg', 8.9),
 (2, 'The Lord of the Rings: The Return of the King', 2003, 'Peter Jackson', 8.9),
 (3, 'Pulp Fiction', 1994, 'Quentin Tarantino', 8.9),
